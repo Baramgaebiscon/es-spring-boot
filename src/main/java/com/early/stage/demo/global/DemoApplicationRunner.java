@@ -15,6 +15,6 @@ public class DemoApplicationRunner implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        log.debug("[active_profile]: " + activeProfile);
+        log.info("[active_profile]: " + activeProfile);
     }
 }
