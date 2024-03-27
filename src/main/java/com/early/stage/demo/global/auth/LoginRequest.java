@@ -1,4 +1,4 @@
-package com.early.stage.demo.global.auth.filter;
+package com.early.stage.demo.global.auth;
 
 import lombok.Getter;
 import lombok.Setter;
