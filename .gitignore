@@ -39,7 +39,7 @@ build
 .gradle
 .idea
 /bin
-
+out
 
 # End of https://www.toptal.com/developers/gitignore/api/macos
 
