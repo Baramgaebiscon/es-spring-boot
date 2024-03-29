@@ -3,6 +3,9 @@ package com.early.stage.demo.global.util;
 import com.early.stage.demo.global.error.ErrorCase;
 import com.early.stage.demo.global.error.ErrorStatusException;
 import com.early.stage.demo.global.property.JwtProperty;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import java.util.Date;
 import java.util.Map;
@@ -39,19 +42,18 @@ public class JwtUtil {
         return generatedToken;
     }
 
-    // TODO: make and throw appropriate exception
-    /*
+
     public static Claims validateToken(String token) throws ErrorStatusException {
 
         try {
             JwtParser parser = Jwts.parserBuilder().setSigningKey(JwtProperty.secretKey).build();
             return parser.parseClaimsJws(token).getBody();
         } catch (ExpiredJwtException ex) {
-            throw new ErrorStatusException();
+            throw new ErrorStatusException(ErrorCase._401_TOKEN_EXPIRED);
         } catch (Exception ex) {
-            throw new ErrorStatusException();
+            throw new ErrorStatusException(ErrorCase._401_TOKEN_VALIDATE_FAIL);
         }
 
     }
-    */
+
 }
