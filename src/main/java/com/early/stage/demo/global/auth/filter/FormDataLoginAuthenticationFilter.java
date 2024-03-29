@@ -1,13 +1,20 @@
 package com.early.stage.demo.global.auth.filter;
 
+import com.early.stage.demo.domain.member.service.MemberLoginService;
+import com.early.stage.demo.global.auth.CustomUserDetails;
+import com.early.stage.demo.global.auth.LoginRequest;
 import com.early.stage.demo.global.error.ErrorCase;
 import com.early.stage.demo.global.error.ErrorStatusException;
+import com.early.stage.demo.global.util.JwtUtil;
 import com.early.stage.demo.global.util.ResponseUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,6 +30,7 @@ public class FormDataLoginAuthenticationFilter extends OncePerRequestFilter {
     private final RequestMatcher requestMatcher = new AntPathRequestMatcher("/login",
         "POST");
     private AuthenticationManager authenticationManager;
+    private MemberLoginService memberLoginService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -38,7 +46,6 @@ public class FormDataLoginAuthenticationFilter extends OncePerRequestFilter {
                     throw new ErrorStatusException(ErrorCase._401_LOGIN_FAIL);
                 }
                 successfulAuthentication(response, authResult);
-                return;
             } catch (ErrorStatusException ex) {
                 ResponseUtil.setResponseToErrorResponse(response, ex.getErrorCase());
             }
@@ -47,7 +54,7 @@ public class FormDataLoginAuthenticationFilter extends OncePerRequestFilter {
         }
     }
 
-    public Authentication attemptAuthentication(String id, String password) throws ErrorStatusException {
+    private Authentication attemptAuthentication(String id, String password) throws ErrorStatusException {
         if (id.isEmpty() || password.isEmpty()) {
             throw new ErrorStatusException(ErrorCase._400_BAD_FORM_DATA);
         }
@@ -60,9 +67,22 @@ public class FormDataLoginAuthenticationFilter extends OncePerRequestFilter {
         }
     }
 
-    // TODO: when login authentication successful then response accessToken and refreshToken.
-    protected void successfulAuthentication(HttpServletResponse response, Authentication authResult) {
+    private void successfulAuthentication(HttpServletResponse response, Authentication authResult)
+        throws ErrorStatusException {
+        CustomUserDetails userDetails = (CustomUserDetails) authResult.getPrincipal();
+        long userId = userDetails.getMember().getMemberId();
 
+        String accessToken = "";
+        String refreshToken = "";
+        Date loginDate = new Date();
+        accessToken = JwtUtil.generateAccessToken(userId, loginDate);
+        refreshToken = JwtUtil.generateRefreshToken(userId, loginDate);
+
+        LocalDateTime localDateTime = LocalDateTime.ofInstant(loginDate.toInstant(), ZoneId.systemDefault());
+        memberLoginService.modifyMemberLoginDate(userId, localDateTime);
+
+        ResponseUtil.addCookieWithHttpOnly(response, "accessToken", accessToken);
+        ResponseUtil.addCookieWithHttpOnly(response, "refreshToken", refreshToken);
     }
 
 }
