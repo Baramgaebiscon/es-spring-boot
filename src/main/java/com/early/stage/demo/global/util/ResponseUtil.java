@@ -5,6 +5,7 @@ import com.early.stage.demo.global.error.ErrorResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletInputStream;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
@@ -31,5 +32,12 @@ public class ResponseUtil {
         response.setStatus(errorCase.getStatus().value());
         String body = jsonFrom(new ErrorResponse(errorCase.getCode(), errorCase.getMessage()));
         response.getWriter().write(body);
+    }
+
+    // TODO: After setting https, should modify this method to set secure
+    public static void addCookieWithHttpOnly(HttpServletResponse response, String name, String value) {
+        Cookie cookie = new Cookie(name, value);
+        cookie.setHttpOnly(true);
+        response.addCookie(cookie);
     }
 }
