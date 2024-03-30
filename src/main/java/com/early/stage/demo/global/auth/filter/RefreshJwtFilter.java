@@ -19,7 +19,7 @@ public class RefreshJwtFilter extends OncePerRequestFilter {
 
     private MemberLoginService memberLoginService;
 
-    private final AntPathRequestMatcher refreshRequestMatcher = new AntPathRequestMatcher("/refresh",
+    private final AntPathRequestMatcher requestMatcher = new AntPathRequestMatcher("/refresh",
         "POST");
 
     public RefreshJwtFilter(MemberLoginService memberLoginService) {
@@ -30,7 +30,7 @@ public class RefreshJwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
         throws ServletException, IOException {
 
-        if (refreshRequestMatcher.matches(request)) {
+        if (requestMatcher.matches(request)) {
             String authorization = request.getHeader("Authorization");
             if (authorization == null || JwtUtil.prefixNotMatched(authorization)) {
                 filterChain.doFilter(request, response);
