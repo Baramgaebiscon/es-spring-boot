@@ -3,6 +3,7 @@ package com.early.stage.demo.global.config;
 import com.early.stage.demo.domain.member.service.MemberLoginService;
 import com.early.stage.demo.global.auth.CustomUserDetailsService;
 import com.early.stage.demo.global.auth.filter.FormDataLoginAuthenticationFilter;
+import com.early.stage.demo.global.auth.filter.HandleErrorStatusExceptionFilter;
 import com.early.stage.demo.global.auth.filter.JwtAuthenticationFilter;
 import com.early.stage.demo.global.auth.filter.RefreshJwtFilter;
 import lombok.RequiredArgsConstructor;
@@ -50,9 +51,10 @@ public class SecurityConfig {
 
         @Override
         public void configure(HttpSecurity http) throws Exception {
-            http.addFilterAt(new FormDataLoginAuthenticationFilter(http.getSharedObject(
+            http.addFilterAt(new HandleErrorStatusExceptionFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(new FormDataLoginAuthenticationFilter(http.getSharedObject(
                         AuthenticationManager.class), memberLoginService),
-                    UsernamePasswordAuthenticationFilter.class)
+                    HandleErrorStatusExceptionFilter.class)
                 .addFilterAfter(new JwtAuthenticationFilter(customUserDetailsService),
                     FormDataLoginAuthenticationFilter.class)
                 .addFilterAfter(new RefreshJwtFilter(memberLoginService),
