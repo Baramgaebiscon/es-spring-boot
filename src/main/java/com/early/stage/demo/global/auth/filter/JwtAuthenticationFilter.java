@@ -29,10 +29,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
         throws ServletException, IOException {
         String authorization = request.getHeader("Authorization");
-        if (authorization == null || prefixNotMatched(authorization)) {
+        if (authorization == null || JwtUtil.prefixNotMatched(authorization)) {
             filterChain.doFilter(request, response);
         } else {
-            String token = authorization.substring(JwtProperty.prefix.length());
+            String token = JwtUtil.extractTokenWithoutPrefix(authorization);
             try {
                 Claims claims = JwtUtil.validateToken(token);
                 if (claims.getSubject().equals("access")) {
@@ -48,9 +48,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
     }
 
-    private boolean prefixNotMatched(String value) {
-        return !value.startsWith(JwtProperty.prefix);
-    }
 
     private Authentication authenticate(Long userId) throws ErrorStatusException {
 

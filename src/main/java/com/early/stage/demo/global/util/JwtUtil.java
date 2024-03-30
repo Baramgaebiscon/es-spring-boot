@@ -56,4 +56,12 @@ public class JwtUtil {
 
     }
 
+    public static boolean prefixNotMatched(String value) {
+        return !value.startsWith(JwtProperty.prefix);
+    }
+
+    public static String extractTokenWithoutPrefix(String value) {
+        return value.substring(JwtProperty.prefix.length());
+    }
+
 }
