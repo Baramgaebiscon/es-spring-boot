@@ -2,9 +2,7 @@ package com.early.stage.demo.global.auth.filter;
 
 import com.early.stage.demo.global.auth.CustomUserDetailsService;
 import com.early.stage.demo.global.error.ErrorStatusException;
-import com.early.stage.demo.global.property.JwtProperty;
 import com.early.stage.demo.global.util.JwtUtil;
-import com.early.stage.demo.global.util.ResponseUtil;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
