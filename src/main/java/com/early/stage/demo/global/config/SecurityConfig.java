@@ -4,6 +4,7 @@ import com.early.stage.demo.domain.member.service.MemberLoginService;
 import com.early.stage.demo.global.auth.CustomUserDetailsService;
 import com.early.stage.demo.global.auth.filter.FormDataLoginAuthenticationFilter;
 import com.early.stage.demo.global.auth.filter.JwtAuthenticationFilter;
+import com.early.stage.demo.global.auth.filter.RefreshJwtFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -53,7 +54,9 @@ public class SecurityConfig {
                         AuthenticationManager.class), memberLoginService),
                     UsernamePasswordAuthenticationFilter.class)
                 .addFilterAfter(new JwtAuthenticationFilter(customUserDetailsService),
-                    FormDataLoginAuthenticationFilter.class);
+                    FormDataLoginAuthenticationFilter.class)
+                .addFilterAfter(new RefreshJwtFilter(memberLoginService),
+                    JwtAuthenticationFilter.class);
         }
     }
 }
