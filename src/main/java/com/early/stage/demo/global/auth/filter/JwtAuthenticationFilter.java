@@ -33,18 +33,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
         } else {
             String token = JwtUtil.extractTokenWithoutPrefix(authorization);
-            try {
-                Claims claims = JwtUtil.validateToken(token);
-                if (claims.getSubject().equals("access")) {
-                    Long userId = Long.valueOf((Integer) claims.get("uid"));
-                    Authentication authResult = authenticate(userId);
-                    onSuccessfulAuthentication(authResult, request, response);
-                } else {
-                    filterChain.doFilter(request, response);
-                }
-            } catch (ErrorStatusException ex) {
-                ResponseUtil.setResponseToErrorResponse(response, ex.getErrorCase());
+
+            Claims claims = JwtUtil.validateToken(token);
+            if (claims.getSubject().equals("access")) {
+                Long userId = Long.valueOf((Integer) claims.get("uid"));
+                Authentication authResult = authenticate(userId);
+                onSuccessfulAuthentication(authResult, request, response);
+            } else {
+                filterChain.doFilter(request, response);
             }
+
         }
     }
 

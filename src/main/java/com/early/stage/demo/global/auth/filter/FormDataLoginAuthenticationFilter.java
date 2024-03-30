@@ -36,19 +36,17 @@ public class FormDataLoginAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
         throws ServletException, IOException {
         if (requestMatcher.matches(request)) {
-            try {
-                LoginRequest loginRequest = ResponseUtil.objectOf(request.getInputStream(), LoginRequest.class);
-                String id = (loginRequest.getId() == null) ? "" : loginRequest.getId().strip();
-                String password = (loginRequest.getPassword() == null) ? "" : loginRequest.getPassword().strip();
 
-                Authentication authResult = attemptAuthentication(id, password);
-                if (authResult == null) {
-                    throw new ErrorStatusException(ErrorCase._401_LOGIN_FAIL);
-                }
-                successfulAuthentication(response, authResult);
-            } catch (ErrorStatusException ex) {
-                ResponseUtil.setResponseToErrorResponse(response, ex.getErrorCase());
+            LoginRequest loginRequest = ResponseUtil.objectOf(request.getInputStream(), LoginRequest.class);
+            String id = (loginRequest.getId() == null) ? "" : loginRequest.getId().strip();
+            String password = (loginRequest.getPassword() == null) ? "" : loginRequest.getPassword().strip();
+
+            Authentication authResult = attemptAuthentication(id, password);
+            if (authResult == null) {
+                throw new ErrorStatusException(ErrorCase._401_LOGIN_FAIL);
             }
+            successfulAuthentication(response, authResult);
+
         } else {
             filterChain.doFilter(request, response);
         }

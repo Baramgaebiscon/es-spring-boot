@@ -36,21 +36,17 @@ public class RefreshJwtFilter extends OncePerRequestFilter {
                 filterChain.doFilter(request, response);
             } else {
                 String token = JwtUtil.extractTokenWithoutPrefix(authorization);
-                try {
-                    Claims claims = JwtUtil.validateToken(token);
-                    if (claims.getSubject().equals("refresh")) {
-                        Long userId = Long.valueOf((Integer) claims.get("uid"));
-                        Date lat = new Date((Long) claims.get("lat"));
+                Claims claims = JwtUtil.validateToken(token);
+                if (claims.getSubject().equals("refresh")) {
+                    Long userId = Long.valueOf((Integer) claims.get("uid"));
+                    Date lat = new Date((Long) claims.get("lat"));
 
-                        checkMostRecentGeneratedToken(userId, lat);
+                    checkMostRecentGeneratedToken(userId, lat);
 
-                        ResponseUtil.addCookieWithHttpOnly(response, "accessToken",
-                            JwtUtil.generateAccessToken(userId, lat));
-                    } else {
-                        filterChain.doFilter(request, response);
-                    }
-                } catch (ErrorStatusException ex) {
-                    ResponseUtil.setResponseToErrorResponse(response, ex.getErrorCase());
+                    ResponseUtil.addCookieWithHttpOnly(response, "accessToken",
+                        JwtUtil.generateAccessToken(userId, lat));
+                } else {
+                    filterChain.doFilter(request, response);
                 }
             }
         } else {
