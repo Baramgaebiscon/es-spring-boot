@@ -36,7 +36,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (claims.getSubject().equals("access")) {
                 Long userId = Long.valueOf((Integer) claims.get("uid"));
                 Authentication authResult = authenticate(userId);
-                onSuccessfulAuthentication(authResult, request, response);
+                onSuccessfulAuthentication(authResult, request, response, filterChain);
             } else {
                 filterChain.doFilter(request, response);
             }
@@ -54,9 +54,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private void onSuccessfulAuthentication(Authentication authResult, HttpServletRequest request,
-        HttpServletResponse response) {
+        HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
         securityContext.setAuthentication(authResult);
+        SecurityContextHolder.setContext(securityContext);
+
+        filterChain.doFilter(request, response);
     }
 
 
